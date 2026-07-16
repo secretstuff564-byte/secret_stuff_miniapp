@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Обувь - Secret Stuff Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
+    <style>
+        .separator {
+            margin-top: 160px;
+        }
+        .product-link {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+        .empty-category {
+            text-align: center;
+            padding: 80px 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 24px;
+            color: #666;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фиксированная шапка (скрывается при скролле) -->
+    <div class="top-bar">
+        <div class="left-placeholder"></div>
+        <div class="logo">
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип магазина">
+            </a>
+        </div>
+        <!-- Иконки удалены отсюда -->
+    </div>
+
+    <!-- Фиксированные иконки (всегда видны) -->
+    <div class="fixed-icons">
+        <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
+        <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
+    </div>
+
+    <!-- Выпадающее меню -->
+    <div id="dropdown-menu" class="dropdown-menu">
+        <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
+        <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
+        <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
+        <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
+        <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
+        <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
+        <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
+        <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+    </div>
+
+    <!-- Разделитель -->
+    <div class="separator">
+        <span>Обувь</span>
+    </div>
+
+    <!-- Контейнер -->
+    <div id="footwear-container" class="products-row"></div>
+
+    <!-- Социальные иконки -->
+    <div class="social-links">
+        <a href="https://t.me/+EJOQrWRWt3ZkNGQy" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tg.png') }}" alt="Telegram"></a>
+        <a href="https://www.tiktok.com/@tg.secret_stuff_ru" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tt.png') }}" alt="TikTok"></a>
+        <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
+    </div>
+
+    <!-- Данные -->
+    <script>
+        const categoryProducts = {{ products|tojson|safe }};
+        const staticBase = '{{ url_for("static", filename="") }}';
+    </script>
+
+    <script>
+        function renderCategory() {
+            const container = document.getElementById('footwear-container');
+            if (!container) return;
+
+            if (!categoryProducts || categoryProducts.length === 0) {
+                container.innerHTML = `<div class="empty-category">В этой категории пока нет товаров<br>Скоро появятся</div>`;
+                return;
+            }
+
+            let html = '';
+            categoryProducts.forEach(product => {
+                const imagesList = product.images.join(',');
+                const firstImage = product.images[0];
+                html += `
+                    <div class="product-card" data-id="${product.id}" data-images="${imagesList}">
+                        <a href="/product/${product.id}" class="product-link">
+                            <div class="card-image">
+                                <img src="${staticBase}${firstImage}" alt="${product.name}">
+                            </div>
+                            <h3>${product.name}</h3>
+                            <p class="price">${product.price.toLocaleString()} ₽</p>
+                        </a>
+                        <div class="card-buttons">
+                            <button class="buy-btn">В корзину</button>
+                            <button class="favorite-btn">
+                                <img src="${staticBase}izbrannoe.png" alt="В избранное">
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            initProductCards();
+            initFavoriteButtons();
+            initCartButtons();
+        }
+
+        function initProductCards() {
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const imagesAttr = card.getAttribute('data-images');
+                if (!imagesAttr) return;
+                let imagesList = imagesAttr.split(',').map(s => s.trim());
+                if (imagesList.length < 2) return;
+                const imgElement = card.querySelector('.card-image img');
+                if (imgElement && imagesList[0]) {
+                    imgElement.src = staticBase + imagesList[0];
+                }
+                let currentIndex = 0;
+                let hoverTimer = null;
+                const changeImage = (index) => {
+                    if (index >= imagesList.length) index = 0;
+                    if (index < 0) index = imagesList.length - 1;
+                    const newSrc = staticBase + imagesList[index];
+                    if (imgElement.src !== newSrc && newSrc) {
+                        imgElement.style.opacity = '0';
+                        setTimeout(() => {
+                            imgElement.src = newSrc;
+                            imgElement.style.opacity = '1';
+                        }, 150);
+                    }
+                    return index;
+                };
+                card.addEventListener('mouseenter', () => {
+                    if (hoverTimer) clearInterval(hoverTimer);
+                    hoverTimer = setInterval(() => {
+                        currentIndex = (currentIndex + 1) % imagesList.length;
+                        changeImage(currentIndex);
+                    }, 600);
+                });
+                card.addEventListener('mouseleave', () => {
+                    if (hoverTimer) {
+                        clearInterval(hoverTimer);
+                        hoverTimer = null;
+                    }
+                    currentIndex = 0;
+                    changeImage(0);
+                });
+            });
+        }
+
+        function initFavoriteButtons() {
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const btns = document.querySelectorAll('.favorite-btn');
+            btns.forEach(btn => {
+                const card = btn.closest('.product-card');
+                const id = parseInt(card.getAttribute('data-id'));
+                const isFav = favorites.includes(id);
+                const img = btn.querySelector('img');
+                if (isFav) {
+                    btn.classList.add('active');
+                    img.src = staticBase + 'filled.png';
+                } else {
+                    img.src = staticBase + 'izbrannoe.png';
+                }
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+                    const idx = favs.indexOf(id);
+                    if (idx === -1) {
+                        favs.push(id);
+                        btn.classList.add('active');
+                        img.src = staticBase + 'filled.png';
+                    } else {
+                        favs.splice(idx, 1);
+                        btn.classList.remove('active');
+                        img.src = staticBase + 'izbrannoe.png';
+                    }
+                    localStorage.setItem('favorites', JSON.stringify(favs));
+                });
+            });
+        }
+
+        function initCartButtons() {
+            const btns = document.querySelectorAll('.buy-btn');
+            btns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const card = btn.closest('.product-card');
+                    const id = parseInt(card.getAttribute('data-id'));
+                    const product = categoryProducts.find(p => p.id === id);
+                    if (product) {
+                        let cart = JSON.parse(localStorage.getItem('shopping_cart')) || [];
+                        const existing = cart.find(item => item.id === id);
+                        if (existing) {
+                            existing.quantity += 1;
+                        } else {
+                            cart.push({ id: id, quantity: 1 });
+                        }
+                        localStorage.setItem('shopping_cart', JSON.stringify(cart));
+                        alert('Товар добавлен в корзину');
+                    }
+                });
+            });
+        }
+
+        renderCategory();
+
+        // Выпадающее меню (селектор обновлён)
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuIcon = document.querySelector('.fixed-icons .icon:last-child');
+            const dropdown = document.getElementById('dropdown-menu');
+            if (menuIcon && dropdown) {
+                menuIcon.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.toggle('open');
+                });
+                document.addEventListener('click', (e) => {
+                    if (dropdown.classList.contains('open') && !dropdown.contains(e.target) && !menuIcon.contains(e.target)) {
+                        dropdown.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Подключаем header.js -->
+    <script src="{{ url_for('static', filename='header.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Secret Stuff Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
+    <style>
+        .product-detail {
+            max-width: 1200px;
+            margin: 160px auto 40px;
+            padding: 0 20px;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .product-gallery {
+            flex: 1 1 40%;
+            min-width: 300px;
+        }
+        .product-gallery .main-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        .product-gallery .thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .product-gallery .thumbnails img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border 0.2s;
+        }
+        .product-gallery .thumbnails img:hover {
+            border-color: #2F4F4F;
+        }
+        .product-info {
+            flex: 1 1 50%;
+            min-width: 300px;
+        }
+        .product-info h1 {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            color: #222;
+            margin-bottom: 10px;
+        }
+        .product-info .price {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2F4F4F;
+            margin-bottom: 20px;
+        }
+        .product-info .description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        .variants {
+            margin-bottom: 20px;
+        }
+        .variants .color-select,
+        .variants .size-select {
+            margin-bottom: 10px;
+        }
+        .variants label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .variants select {
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background: white;
+        }
+        .product-info .sizes {
+            margin-bottom: 20px;
+        }
+        .product-info .sizes label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        .product-info .sizes select {
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background: white;
+        }
+        .product-info .add-to-cart {
+            background: #cddae9;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .product-info .add-to-cart:hover {
+            background: #1e3a3a;
+            transform: scale(1.02);
+        }
+        .product-info .favorite-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-left: 15px;
+            vertical-align: middle;
+            padding: 0;
+            display: inline-block;
+        }
+        .product-info .favorite-btn img {
+            width: 36px;
+            height: 36px;
+            display: block;
+        }
+        .product-info .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+            .product-detail {
+                margin-top: 140px;
+                flex-direction: column;
+            }
+        }
+
+        /* ===== Стили для блока "Лукбук" (сетка) ===== */
+        .lookbook-section {
+            max-width: 1200px;
+            margin: 60px auto 40px;
+            padding: 0 20px;
+        }
+        .lookbook-title {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #2F4F4F;
+            text-align: center;
+        }
+        .lookbook-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .lookbook-item {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            background: #f9f9f9;
+        }
+        .lookbook-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        .lookbook-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+        @media (max-width: 900px) {
+            .lookbook-gallery {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 600px) {
+            .lookbook-gallery {
+                grid-template-columns: 1fr;
+            }
+            .lookbook-item img {
+                height: 250px;
+            }
+            .lookbook-title {
+                font-size: 22px;
+            }
+        }
+
+        /* ===== Lightbox ===== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 3000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .lightbox.active {
+            display: flex;
+        }
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+            animation: lightboxFadeIn 0.3s ease;
+        }
+        @keyframes lightboxFadeIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .lightbox-close {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            z-index: 3001;
+        }
+        .lightbox-close:hover {
+            color: #ccc;
+        }
+        .lightbox-caption {
+            color: #fff;
+            text-align: center;
+            padding: 15px 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 18px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 0 0 12px 12px;
+            margin-top: -5px;
+        }
+
+        /* ===== Стили для нижней панели (мобильные) ===== */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1100;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 12px;
+            border-top: 1px solid #eee;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 11px;
+            font-family: 'Quicksand', sans-serif;
+            gap: 2px;
+        }
+        .bottom-nav .nav-item img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+        .bottom-nav .nav-item span {
+            margin-top: 2px;
+        }
+        @media (max-width: 768px) {
+            .fixed-icons {
+                display: none !important;
+            }
+            .bottom-nav {
+                display: flex;
+            }
+            body {
+                padding-bottom: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <div class="top-bar">
+        <div class="left-placeholder"></div>
+        <div class="logo">
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип магазина">
+            </a>
+        </div>
+    </div>
+
+    <div class="fixed-icons">
+        <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
+        <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
+    </div>
+
+    <div id="dropdown-menu" class="dropdown-menu">
+        <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
+        <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
+        <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
+        <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
+        <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
+        <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
+        <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
+        <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+    </div>
+
+    <!-- Основной блок -->
+    <div class="product-detail">
+        <div class="product-gallery">
+            <img class="main-img" id="main-image" src="{{ url_for('static', filename=product.images[0]) }}" alt="{{ product.name }}">
+            <div class="thumbnails">
+                {% for img in product.images %}
+                <img src="{{ url_for('static', filename=img) }}" alt="фото" onclick="changeMainImage(this.src)">
+                {% endfor %}
+            </div>
+        </div>
+        <div class="product-info">
+            <h1>{{ product.name }}</h1>
+            <div class="price">{{ product.price|int|to_locale }} ₽</div>
+            <div class="description">{{ product.description }}</div>
+
+            {% if product.variants %}
+            <div class="variants">
+                <div class="color-select">
+                    <label for="color-select">Цвет:</label>
+                    <select id="color-select">
+                        <option value="">Выберите цвет</option>
+                        {% for color, sizes in product.variants.items() %}
+                            <option value="{{ color }}">{{ color if color else 'Стандартный' }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {% if product.has_non_one_size %}
+                <div class="size-select">
+                    <label for="size-select">Размер:</label>
+                    <select id="size-select">
+                        <option value="">Выберите размер</option>
+                    </select>
+                </div>
+                {% else %}
+                <input type="hidden" id="size-select" value="one_size">
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="sizes">
+                <label for="size-select">Размер:</label>
+                <select id="size-select">
+                    <option value="">Выберите размер</option>
+                    {% for size, stock in product.sizes_stock.items() %}
+                        {% if stock > 0 %}
+                            <option value="{{ size }}">{{ size }} ({{ stock }} шт.)</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+
+            <div>
+                <button class="add-to-cart" data-id="{{ product.id }}">В корзину</button>
+                <button class="favorite-btn" data-id="{{ product.id }}">
+                    <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="В избранное">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок "Лукбук" -->
+    {% if product.lookbook_images %}
+    <div class="lookbook-section">
+        <h2 class="lookbook-title">Лукбук</h2>
+        <div class="lookbook-gallery">
+            {% for img in product.lookbook_images %}
+            <div class="lookbook-item" onclick="openLightbox('{{ url_for('static', filename=img) }}')">
+                <img src="{{ url_for('static', filename=img) }}" alt="Образ {{ loop.index }}">
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+        <img class="lightbox-content" id="lightbox-img" src="" alt="Увеличенное фото">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+
+    <!-- Социальные иконки -->
+    <div class="social-links">
+        <a href="https://t.me/ваш_username" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tg.png') }}" alt="Telegram"></a>
+        <a href="https://www.tiktok.com/@ваш_username" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tt.png') }}" alt="TikTok"></a>
+        <a href="https://www.instagram.com/ваш_username" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
+    </div>
+
+    <!-- Нижняя панель (мобильные) -->
+    <div class="bottom-nav" id="bottom-nav">
+        <a href="{{ url_for('favorites') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
+            <span>Избранное</span>
+        </a>
+        <a href="{{ url_for('cart') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
+            <span>Корзина</span>
+        </a>
+        <a href="#" class="nav-item" id="bottom-menu-btn">
+            <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">
+            <span>Меню</span>
+        </a>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-modal-content">
+            <span class="cart-modal-close">&times;</span>
+            <h3 id="modal-product-name">Товар</h3>
+            <div id="modal-variants">
+                <div class="modal-color">
+                    <label for="modal-color-select">Цвет:</label>
+                    <select id="modal-color-select">
+                        <option value="">Выберите цвет</option>
+                    </select>
+                </div>
+                <div class="modal-size">
+                    <label for="modal-size-select">Размер:</label>
+                    <select id="modal-size-select">
+                        <option value="">Выберите размер</option>
+                    </select>
+                </div>
+            </div>
+            <button id="modal-add-to-cart" class="add-to-cart-modal">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <script>
+        // Функция смены главного изображения
+        function changeMainImage(src) {
+            document.getElementById('main-image').src = src;
+        }
+
+        // ---------- Логика для вариантов (цвет + размер) ----------
+        const colorSelect = document.getElementById('color-select');
+        const sizeSelect = document.getElementById('size-select');
+        const variants = {{ product.variants|tojson|safe }};
+
+        if (colorSelect) {
+            function updateSizes() {
+                const color = colorSelect.value;
+                const sizes = variants[color] || {};
+
+                if (sizeSelect.tagName === 'INPUT') {
+                    return;
+                }
+
+                sizeSelect.innerHTML = '<option value="">Выберите размер</option>';
+                for (const [size, stock] of Object.entries(sizes)) {
+                    if (stock > 0) {
+                        const option = document.createElement('option');
+                        option.value = size;
+                        const displaySize = (size === 'one_size') ? 'Один размер' : size;
+                        option.textContent = displaySize + ' (' + stock + ' шт.)';
+                        sizeSelect.appendChild(option);
+                    }
+                }
+            }
+
+            colorSelect.addEventListener('change', updateSizes);
+            updateSizes();
+        }
+
+        // ---------- Кнопка "В корзину" ----------
+        document.querySelector('.add-to-cart').addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = parseInt(this.dataset.id);
+            const colorSelect = document.getElementById('color-select');
+            const sizeSelect = document.getElementById('size-select');
+
+            let color = null;
+            let size = null;
+
+            if (colorSelect) {
+                color = colorSelect.value;
+                if (!color) {
+                    alert('Пожалуйста, выберите цвет');
+                    return;
+                }
+
+                if (sizeSelect.tagName === 'INPUT') {
+                    size = sizeSelect.value;
+                } else {
+                    size = sizeSelect.value;
+                    if (!size) {
+                        alert('Пожалуйста, выберите размер');
+                        return;
+                    }
+                }
+            } else {
+                size = sizeSelect.value;
+                if (!size) {
+                    alert('Пожалуйста, выберите размер');
+                    return;
+                }
+            }
+
+            let cart = JSON.parse(localStorage.getItem('shopping_cart')) || [];
+            const existing = cart.find(item => item.id === id && item.color === color && item.size === size);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ id: id, color: color, size: size, quantity: 1 });
+            }
+            localStorage.setItem('shopping_cart', JSON.stringify(cart));
+            alert('Товар добавлен в корзину');
+        });
+
+        // ---------- Кнопка избранного ----------
+        const favBtn = document.querySelector('.favorite-btn');
+        if (favBtn) {
+            const id = parseInt(favBtn.dataset.id);
+            const img = favBtn.querySelector('img');
+            const basePath = "{{ url_for('static', filename='') }}";
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            if (favorites.includes(id)) {
+                img.src = basePath + 'filled.png';
+                favBtn.classList.add('active');
+            }
+            favBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+                const idx = favs.indexOf(id);
+                if (idx === -1) {
+                    favs.push(id);
+                    img.src = basePath + 'filled.png';
+                    this.classList.add('active');
+                } else {
+                    favs.splice(idx, 1);
+                    img.src = basePath + 'izbrannoe.png';
+                    this.classList.remove('active');
+                }
+                localStorage.setItem('favorites', JSON.stringify(favs));
+            });
+        }
+
+        // ---------- Lightbox ----------
+        function openLightbox(src) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+
+        // ---------- Выпадающее меню (двойной обработчик) ----------
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.getElementById('dropdown-menu');
+
+            // Верхняя иконка меню
+            const menuIcon = document.querySelector('.fixed-icons .icon:last-child');
+            if (menuIcon && dropdown) {
+                menuIcon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.toggle('open');
+                });
+            }
+
+            // Нижняя иконка меню (мобильная)
+            const bottomMenuBtn = document.getElementById('bottom-menu-btn');
+            if (bottomMenuBtn && dropdown) {
+                bottomMenuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.toggle('open');
+                });
+            }
+
+            // Закрытие при клике вне меню
+            document.addEventListener('click', function(e) {
+                if (dropdown.classList.contains('open') &&
+                    !dropdown.contains(e.target) &&
+                    !menuIcon.contains(e.target) &&
+                    !bottomMenuBtn.contains(e.target)) {
+                    dropdown.classList.remove('open');
+                }
+            });
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='header.js') }}"></script>
+</body>
+</html>

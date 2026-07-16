@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Stuff Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
+    <style>
+        /* Стили для модального окна */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .cart-modal-content {
+            background: #ffffff;
+            margin: auto;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            position: relative;
+            animation: modalFadeIn 0.3s ease;
+        }
+        @keyframes modalFadeIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .cart-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .cart-modal-close:hover {
+            color: #000;
+        }
+        #modal-product-name {
+            font-family: 'Quicksand', sans-serif;
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #222;
+        }
+        .modal-color, .modal-size {
+            margin-bottom: 15px;
+        }
+        .modal-color label, .modal-size label {
+            font-weight: 600;
+            margin-right: 10px;
+            font-family: 'Quicksand', sans-serif;
+        }
+        .modal-color select, .modal-size select {
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            background: white;
+            width: 100%;
+            max-width: 200px;
+        }
+        #modal-add-to-cart {
+            background: #cddae9;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        #modal-add-to-cart:hover {
+            background: #1e3a3a;
+            transform: scale(1.02);
+        }
+        @media (max-width: 480px) {
+            .cart-modal-content {
+                padding: 20px;
+            }
+            #modal-product-name {
+                font-size: 18px;
+            }
+        }
+
+        /* ===== Стили для нижней панели (мобильные) ===== */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1100;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 0 12px;
+            border-top: 1px solid #eee;
+        }
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 11px;
+            font-family: 'Quicksand', sans-serif;
+            gap: 2px;
+        }
+        .bottom-nav .nav-item img {
+            height: 28px;
+            width: auto;
+            display: block;
+        }
+        .bottom-nav .nav-item span {
+            margin-top: 2px;
+        }
+        @media (max-width: 768px) {
+            .fixed-icons {
+                display: none !important;
+            }
+            .bottom-nav {
+                display: flex;
+            }
+            body {
+                padding-bottom: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Фиксированная шапка -->
+    <div class="top-bar">
+        <div class="left-placeholder"></div>
+        <div class="logo">
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Логотип магазина">
+            </a>
+        </div>
+    </div>
+
+    <!-- Фиксированные иконки -->
+    <div class="fixed-icons">
+        <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
+        <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
+    </div>
+
+    <!-- Выпадающее меню -->
+    <div id="dropdown-menu" class="dropdown-menu">
+        <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
+        <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
+        <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
+        <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
+        <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
+        <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
+        <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
+        <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+    </div>
+
+    <!-- Разделитель -->
+    <div class="separator" style="margin-top: 160px;">
+        <span>Новинки</span>
+    </div>
+
+    <div class="content">
+        <h1></h1>
+        <p></p>
+    </div>
+
+    <!-- Карточки товаров -->
+    <div class="products-row">
+        {% for product in products %}
+        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-link">
+            <div class="product-card" data-id="{{ product.id }}" data-images="{{ product.images|join(',') }}">
+                <div class="card-image">
+                    <img src="{{ url_for('static', filename=product.images[0]) }}" alt="{{ product.name }}">
+                </div>
+                <h3>{{ product.name }}</h3>
+                <p class="price">{{ product.price|int|to_locale }} ₽</p>
+                <div class="card-buttons">
+                    <button class="buy-btn">В корзину</button>
+                    <button class="favorite-btn">
+                        <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="В избранное">
+                    </button>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Социальные сети -->
+    <div class="social-links">
+        <a href="https://t.me/+EJOQrWRWt3ZkNGQy" target="_blank" class="social-icon">
+            <img src="{{ url_for('static', filename='tg.png') }}" alt="Telegram">
+        </a>
+        <a href="https://www.tiktok.com/@tg.secret_stuff_ru" target="_blank" class="social-icon">
+            <img src="{{ url_for('static', filename='tt.png') }}" alt="TikTok">
+        </a>
+        <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon">
+            <img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram">
+        </a>
+    </div>
+
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (мобильные) ===== -->
+    <div class="bottom-nav" id="bottom-nav">
+        <a href="{{ url_for('favorites') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
+            <span>Избранное</span>
+        </a>
+        <a href="{{ url_for('cart') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
+            <span>Корзина</span>
+        </a>
+        <a href="#" class="nav-item" id="bottom-menu-btn">
+            <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">
+            <span>Меню</span>
+        </a>
+    </div>
+
+    <!-- Модальное окно -->
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-modal-content">
+            <span class="cart-modal-close">&times;</span>
+            <h3 id="modal-product-name">Товар</h3>
+            <div id="modal-variants">
+                <div class="modal-color">
+                    <label for="modal-color-select">Цвет:</label>
+                    <select id="modal-color-select">
+                        <option value="">Выберите цвет</option>
+                    </select>
+                </div>
+                <div class="modal-size">
+                    <label for="modal-size-select">Размер:</label>
+                    <select id="modal-size-select">
+                        <option value="">Выберите размер</option>
+                    </select>
+                </div>
+            </div>
+            <button id="modal-add-to-cart" class="add-to-cart-modal">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="{{ url_for('static', filename='products.js') }}"></script>
+    <script src="{{ url_for('static', filename='header.js') }}"></script>
+    <script>
+        // Передаём данные о товарах из Flask в JS
+        const allProducts = {{ products|tojson|safe }};
+        const staticBase = '{{ url_for("static", filename="") }}';
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.getElementById('dropdown-menu');
+
+            // Верхняя иконка меню
+            const menuIcon = document.querySelector('.fixed-icons .icon:last-child');
+            if (menuIcon && dropdown) {
+                menuIcon.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.toggle('open');
+                });
+            }
+
+            // Нижняя иконка меню (мобильная)
+            const bottomMenuBtn = document.getElementById('bottom-menu-btn');
+            if (bottomMenuBtn && dropdown) {
+                bottomMenuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropdown.classList.toggle('open');
+                });
+            }
+
+            // Закрытие при клике вне меню (учитываем обе кнопки)
+            document.addEventListener('click', function(e) {
+                if (dropdown.classList.contains('open') &&
+                    !dropdown.contains(e.target) &&
+                    !menuIcon.contains(e.target) &&
+                    !bottomMenuBtn.contains(e.target)) {
+                    dropdown.classList.remove('open');
+                }
+            });
+
+            // ---------- Модальное окно ----------
+            const modal = document.getElementById('cart-modal');
+            const closeBtn = document.querySelector('.cart-modal-close');
+            const modalProductName = document.getElementById('modal-product-name');
+            const colorSelect = document.getElementById('modal-color-select');
+            const sizeSelect = document.getElementById('modal-size-select');
+            const addToCartBtn = document.getElementById('modal-add-to-cart');
+
+            let currentProductId = null;
+            let currentVariants = {};
+
+            function openModal(productId) {
+                const product = allProducts.find(p => p.id === productId);
+                if (!product) {
+                    alert('Товар не найден');
+                    return;
+                }
+                currentProductId = productId;
+                currentVariants = product.variants || {};
+
+                modalProductName.textContent = product.name;
+
+                colorSelect.innerHTML = '<option value="">Выберите цвет</option>';
+                const colors = Object.keys(currentVariants);
+                if (colors.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'Стандартный';
+                    colorSelect.appendChild(opt);
+                    colorSelect.value = '';
+                } else {
+                    colors.forEach(color => {
+                        const opt = document.createElement('option');
+                        opt.value = color;
+                        opt.textContent = color || 'Стандартный';
+                        colorSelect.appendChild(opt);
+                    });
+                    if (colors.length === 1) {
+                        colorSelect.value = colors[0];
+                    }
+                }
+
+                updateSizes();
+                modal.style.display = 'flex';
+            }
+
+            function updateSizes() {
+                const color = colorSelect.value;
+                const sizes = currentVariants[color] || {};
+                sizeSelect.innerHTML = '<option value="">Выберите размер</option>';
+
+                const sizeKeys = Object.keys(sizes);
+                if (sizeKeys.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = 'one_size';
+                    opt.textContent = 'Один размер';
+                    sizeSelect.appendChild(opt);
+                    sizeSelect.value = 'one_size';
+                } else {
+                    sizeKeys.forEach(size => {
+                        const stock = sizes[size];
+                        if (stock > 0) {
+                            const opt = document.createElement('option');
+                            opt.value = size;
+                            opt.textContent = size + ' (' + stock + ' шт.)';
+                            sizeSelect.appendChild(opt);
+                        }
+                    });
+                    if (sizeSelect.options.length === 2) {
+                        sizeSelect.value = sizeSelect.options[1].value;
+                    }
+                }
+            }
+
+            colorSelect.addEventListener('change', updateSizes);
+
+            function closeModal() {
+                modal.style.display = 'none';
+                currentProductId = null;
+                currentVariants = {};
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            addToCartBtn.addEventListener('click', function() {
+                const color = colorSelect.value;
+                const size = sizeSelect.value;
+                if (!color) {
+                    alert('Пожалуйста, выберите цвет');
+                    return;
+                }
+                if (!size) {
+                    alert('Пожалуйста, выберите размер');
+                    return;
+                }
+                if (currentVariants[color] && currentVariants[color][size] <= 0) {
+                    alert('Этого размера нет в наличии');
+                    return;
+                }
+
+                let cart = JSON.parse(localStorage.getItem('shopping_cart')) || [];
+                const existing = cart.find(item => item.id === currentProductId && item.color === color && item.size === size);
+                if (existing) {
+                    existing.quantity += 1;
+                } else {
+                    cart.push({ id: currentProductId, color: color, size: size, quantity: 1 });
+                }
+                localStorage.setItem('shopping_cart', JSON.stringify(cart));
+                alert('Товар добавлен в корзину');
+                closeModal();
+            });
+
+            // Клик по кнопке "В корзину" на карточках
+            document.addEventListener('click', function(e) {
+                const buyBtn = e.target.closest('.buy-btn');
+                if (!buyBtn) return;
+                const card = buyBtn.closest('.product-card');
+                if (!card) return;
+                const productId = parseInt(card.dataset.id);
+                const product = allProducts.find(p => p.id === productId);
+                if (!product) {
+                    alert('Товар не найден');
+                    return;
+                }
+                openModal(productId);
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+    </script>
+</body>
+</html>
