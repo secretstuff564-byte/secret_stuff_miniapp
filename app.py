@@ -1,9 +1,31 @@
 from flask import Flask, render_template, abort, redirect, url_for, request, jsonify
 import pandas as pd
 import json
-from openpyxl import load_workbook   # <-- добавлен новый импорт
+from openpyxl import load_workbook
+import requests  # добавлен импорт
 
 app = Flask(__name__)
+
+# ===== НАСТРОЙКИ ТЕЛЕГРАМ =====
+TELEGRAM_TOKEN = '8262290622:AAF5Zp0hgJr5fOJ4nn6JhOd4CFV0GJNk8Bg'
+TELEGRAM_CHAT_ID = '@secret_manager_1'
+
+def send_telegram_message(text):
+    """Отправляет сообщение менеджеру через Telegram Bot API"""
+    url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage'
+    payload = {
+        'chat_id': TELEGRAM_CHAT_ID,
+        'text': text,
+        'parse_mode': 'HTML'
+    }
+    try:
+        response = requests.post(url, json=payload)
+        if not response.ok:
+            print(f'Ошибка отправки в Telegram: {response.text}')
+        return response.ok
+    except Exception as e:
+        print(f'Ошибка отправки в Telegram: {e}')
+        return False
 
 
 # ===== ФИЛЬТР ДЛЯ ФОРМАТИРОВАНИЯ ЦЕН =====
@@ -171,7 +193,7 @@ def reload_products():
     return 'Товары перезагружены из Excel'
 
 
-# ===== НОВЫЙ МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА (С СОХРАНЕНИЕМ ФОРМАТИРОВАНИЯ) =====
+# ===== МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА (С СОХРАНЕНИЕМ ФОРМАТИРОВАНИЯ И УВЕДОМЛЕНИЕМ) =====
 @app.route('/checkout', methods=['POST'])
 def checkout():
     data = request.get_json()
@@ -179,6 +201,7 @@ def checkout():
         return jsonify({'success': False, 'error': 'Нет данных корзины'}), 400
 
     cart = data['cart']
+    total = data.get('total', 0)
 
     try:
         # Загружаем книгу Excel с форматированием
@@ -246,6 +269,19 @@ def checkout():
         # Перезагружаем глобальный список товаров
         global products
         products = load_products()
+
+        # ===== ОТПРАВКА УВЕДОМЛЕНИЯ МЕНЕДЖЕРУ =====
+        message = f"🛒 <b>Новый заказ!</b>\n\n"
+        for item in cart:
+            product_name = item.get('name', 'Товар')
+            color = item.get('color', '—')
+            size = item.get('size', '—')
+            qty = item.get('quantity', 1)
+            price = item.get('price', 0)
+            message += f"• {product_name} (Цвет: {color}, Размер: {size}) × {qty} = {price * qty} ₽\n"
+        message += f"\n💰 <b>Итого: {total} ₽</b>"
+
+        send_telegram_message(message)
 
         return jsonify({'success': True, 'message': 'Заказ оформлен, остатки обновлены'})
 
