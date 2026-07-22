@@ -40,11 +40,20 @@
             width: 100%;
             padding: 0;
         }
+
+        /* ===== ИСПРАВЛЕННЫЙ МЕДИАЗАПРОС ===== */
         @media (max-width: 700px) {
             #category-container:not(:empty) {
-                grid-template-columns: 1fr;
-                max-width: 350px;
-                gap: 25px;
+                grid-template-columns: repeat(2, 1fr);
+                max-width: 600px;
+                gap: 15px;
+                padding: 0 10px;
+            }
+            @media (max-width: 480px) {
+                #category-container:not(:empty) {
+                    grid-template-columns: 1fr;
+                    max-width: 350px;
+                }
             }
         }
 

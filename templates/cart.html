@@ -324,7 +324,7 @@
                 });
             });
 
-            // ===== ОБРАБОТЧИК КНОПКИ "ОФОРМИТЬ ЗАКАЗ" =====
+            // ===== ОБРАБОТЧИК КНОПКИ "ОФОРМИТЬ ЗАКАЗ" (УПРОЩЁННЫЙ) =====
             const checkoutBtn = document.getElementById('checkout-btn');
             if (checkoutBtn) {
                 checkoutBtn.addEventListener('click', function() {
@@ -365,23 +365,25 @@
                         checkoutBtn.textContent = 'Оформить заказ';
                         if (data.success) {
                             localStorage.removeItem('shopping_cart');
-                            renderCart(); // корзина очистится
+                            renderCart();
 
-                            // ===== СТАРОЕ СООБЩЕНИЕ ОБ УСПЕШНОМ ОФОРМЛЕНИИ =====
-                            alert('Заказ успешно оформлен!');
-
-                            // Открываем чат с менеджером
-                            let message = '🛒 *Заказ оформлен!*\n\n';
+                            // Сообщение для менеджера (без эмодзи, краткое)
+                            let message = 'Новый заказ!\n';
                             cartData.forEach((item, idx) => {
                                 message += `${idx+1}. ${item.name} (${item.color}, ${item.size}) × ${item.quantity}\n`;
                             });
-                            message += `\n💰 Итого: ${total} ₽`;
-                            const link = `tg://resolve?domain=${MANAGER_USERNAME}&text=${encodeURIComponent(message)}`;
+                            message += `Итого: ${total} ₽`;
+
+                            const encodedMessage = encodeURIComponent(message);
+                            const link = `tg://resolve?domain=${MANAGER_USERNAME}&text=${encodedMessage}`;
+
                             if (window.Telegram && window.Telegram.WebApp) {
                                 window.Telegram.WebApp.openTelegramLink(link);
                             } else {
                                 window.open(link, '_blank');
                             }
+
+                            alert('Заказ оформлен! Откройте диалог с менеджером, чтобы отправить сообщение.');
                         } else {
                             alert('Ошибка оформления заказа: ' + (data.error || 'Неизвестная ошибка'));
                         }
@@ -577,7 +579,6 @@
                 });
             }
 
-            // ===== ОБРАБОТЧИК ДЛЯ НИЖНЕЙ ИКОНКИ МЕНЮ =====
             const bottomMenuBtn = document.getElementById('bottom-menu-btn');
             if (bottomMenuBtn && dropdown) {
                 bottomMenuBtn.addEventListener('click', function(e) {
