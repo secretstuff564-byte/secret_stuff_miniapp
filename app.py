@@ -2,30 +2,8 @@ from flask import Flask, render_template, abort, redirect, url_for, request, jso
 import pandas as pd
 import json
 from openpyxl import load_workbook
-import requests  # добавлен импорт
 
 app = Flask(__name__)
-
-# ===== НАСТРОЙКИ ТЕЛЕГРАМ =====
-TELEGRAM_TOKEN = '8262290622:AAF5Zp0hgJr5fOJ4nn6JhOd4CFV0GJNk8Bg'
-TELEGRAM_CHAT_ID = '@secret_manager_1'
-
-def send_telegram_message(text):
-    """Отправляет сообщение менеджеру через Telegram Bot API"""
-    url = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage'
-    payload = {
-        'chat_id': TELEGRAM_CHAT_ID,
-        'text': text,
-        'parse_mode': 'HTML'
-    }
-    try:
-        response = requests.post(url, json=payload)
-        if not response.ok:
-            print(f'Ошибка отправки в Telegram: {response.text}')
-        return response.ok
-    except Exception as e:
-        print(f'Ошибка отправки в Telegram: {e}')
-        return False
 
 
 # ===== ФИЛЬТР ДЛЯ ФОРМАТИРОВАНИЯ ЦЕН =====
@@ -193,7 +171,7 @@ def reload_products():
     return 'Товары перезагружены из Excel'
 
 
-# ===== МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА (С СОХРАНЕНИЕМ ФОРМАТИРОВАНИЯ И УВЕДОМЛЕНИЕМ) =====
+# ===== МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА (ТОЛЬКО ОБНОВЛЕНИЕ ОСТАТКОВ) =====
 @app.route('/checkout', methods=['POST'])
 def checkout():
     data = request.get_json()
@@ -201,14 +179,13 @@ def checkout():
         return jsonify({'success': False, 'error': 'Нет данных корзины'}), 400
 
     cart = data['cart']
-    total = data.get('total', 0)
 
     try:
         # Загружаем книгу Excel с форматированием
         wb = load_workbook(EXCEL_PATH)
         ws = wb.active
 
-        # Находим колонки по заголовкам (первая строка)
+        # Находим колонки по заголовкам
         headers = {}
         for col in range(1, ws.max_column + 1):
             cell_value = ws.cell(row=1, column=col).value
@@ -221,14 +198,13 @@ def checkout():
         id_col = headers['id']
         variants_col = headers['variants']
 
-        # Обрабатываем каждый товар в корзине
+        # Обрабатываем каждый товар
         for item in cart:
             product_id = item['id']
             color = item.get('color', '')
             size = item.get('size', '')
             quantity = item['quantity']
 
-            # Ищем строку с нужным id
             row_found = None
             for row in range(2, ws.max_row + 1):
                 if ws.cell(row=row, column=id_col).value == product_id:
@@ -238,7 +214,6 @@ def checkout():
             if row_found is None:
                 return jsonify({'success': False, 'error': f'Товар с id {product_id} не найден'}), 400
 
-            # Читаем текущие варианты
             variants_cell = ws.cell(row=row_found, column=variants_col)
             variants_str = variants_cell.value
             if not variants_str:
@@ -258,30 +233,14 @@ def checkout():
             if current_stock < quantity:
                 return jsonify({'success': False, 'error': f'Недостаточно остатков для товара {product_id}, цвет {color}, размер {size}. Доступно: {current_stock}'}), 400
 
-            # Уменьшаем остаток
             variants[color][size] -= quantity
-            # Обновляем ячейку (сохраняя формат)
             variants_cell.value = json.dumps(variants, ensure_ascii=False)
 
-        # Сохраняем книгу — форматирование не сбросится
         wb.save(EXCEL_PATH)
 
         # Перезагружаем глобальный список товаров
         global products
         products = load_products()
-
-        # ===== ОТПРАВКА УВЕДОМЛЕНИЯ МЕНЕДЖЕРУ =====
-        message = f"🛒 <b>Новый заказ!</b>\n\n"
-        for item in cart:
-            product_name = item.get('name', 'Товар')
-            color = item.get('color', '—')
-            size = item.get('size', '—')
-            qty = item.get('quantity', 1)
-            price = item.get('price', 0)
-            message += f"• {product_name} (Цвет: {color}, Размер: {size}) × {qty} = {price * qty} ₽\n"
-        message += f"\n💰 <b>Итого: {total} ₽</b>"
-
-        send_telegram_message(message)
 
         return jsonify({'success': True, 'message': 'Заказ оформлен, остатки обновлены'})
 
