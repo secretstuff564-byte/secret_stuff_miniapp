@@ -8,6 +8,8 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
     <style>
+        /* ... все стили остаются без изменений (как в вашем файле) ... */
+        /* Я не буду дублировать их для краткости, но они должны остаться теми же */
         .cart-container { max-width: 1200px; margin: 160px auto 40px; padding: 0 20px; }
         .cart-empty { text-align: center; padding: 80px 20px; font-family: 'Quicksand', sans-serif; font-size: 24px; color: #666; position: relative; }
         .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #cddae9; color: white; text-decoration: none; border-radius: 40px; font-family: 'Quicksand', sans-serif; font-weight: 600; transition: background 0.2s, transform 0.1s; cursor: pointer; }
@@ -365,10 +367,12 @@
                     localStorage.removeItem('shopping_cart');
                     renderCart();
 
-                    // Открываем диалог с менеджером
-                    const link = `tg://resolve?domain=${MANAGER_USERNAME}`;
+                    // Открываем диалог с менеджером через HTTPS (работает всегда)
+                    const link = `https://t.me/${MANAGER_USERNAME}`;
                     if (window.Telegram && window.Telegram.WebApp) {
-                        window.Telegram.WebApp.openTelegramLink(link);
+                        // Внутри Telegram Mini App можно использовать openTelegramLink, но он не для HTTPS
+                        // Поэтому просто открываем в новой вкладке
+                        window.open(link, '_blank');
                     } else {
                         window.open(link, '_blank');
                     }
