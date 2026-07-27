@@ -11,26 +11,24 @@
         .separator { margin-top: 160px; }
         .product-link { display: block; text-decoration: none; color: inherit; }
 
+        /* ===== Контейнер категорий ===== */
         #category-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
+            /* Базовые стили для пустого состояния */
             min-height: 60vh;
             padding: 20px;
             max-width: 1200px;
             margin: 40px auto;
-            gap: 30px;
         }
+        /* Когда контейнер пуст – центрируем сообщение */
+        #category-container:empty {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        /* Когда есть товары, класс .products-row уже задаёт сетку */
         #category-container:not(:empty) {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-            min-height: auto;
-            align-items: start;
+            display: grid; /* переопределяем на grid, чтобы работал .products-row */
         }
         .empty-category {
             text-align: center;
@@ -41,23 +39,24 @@
             padding: 0;
         }
 
-        /* ===== ИСПРАВЛЕННЫЙ МЕДИАЗАПРОС ===== */
+        /* ===== ПРИНУДИТЕЛЬНО 2 КОЛОНКИ НА МОБИЛЬНЫХ ===== */
         @media (max-width: 700px) {
-            #category-container:not(:empty) {
-                grid-template-columns: repeat(2, 1fr);
-                max-width: 600px;
-                gap: 15px;
-                padding: 0 10px;
+            #category-container.products-row {
+                grid-template-columns: repeat(2, 1fr) !important;
+                max-width: 600px !important;
+                gap: 15px !important;
+                padding: 0 10px !important;
             }
+            /* На очень маленьких экранах возвращаем одну колонку */
             @media (max-width: 480px) {
-                #category-container:not(:empty) {
-                    grid-template-columns: 1fr;
-                    max-width: 350px;
+                #category-container.products-row {
+                    grid-template-columns: 1fr !important;
+                    max-width: 350px !important;
                 }
             }
         }
 
-        /* Стили для модального окна */
+        /* Стили для модального окна (без изменений) */
         .cart-modal {
             display: none;
             position: fixed;
@@ -226,8 +225,8 @@
         <span>{{ category_ru }}</span>
     </div>
 
-    <!-- Контейнер для товаров -->
-    <div id="category-container"></div>
+    <!-- Контейнер для товаров (с классом products-row) -->
+    <div id="category-container" class="products-row"></div>
 
     <!-- Социальные иконки -->
     <div class="social-links">
