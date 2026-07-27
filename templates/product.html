@@ -141,7 +141,6 @@
             }
         }
 
-        /* ===== Стили для блока "Лукбук" (сетка) ===== */
         .lookbook-section {
             max-width: 1200px;
             margin: 60px auto 40px;
@@ -195,7 +194,6 @@
             }
         }
 
-        /* ===== Lightbox ===== */
         .lightbox {
             display: none;
             position: fixed;
@@ -249,7 +247,6 @@
             margin-top: -5px;
         }
 
-        /* ===== Стили для нижней панели (мобильные) ===== */
         .bottom-nav {
             display: none;
             position: fixed;
@@ -307,12 +304,15 @@
         </div>
     </div>
 
+    <!-- ===== ВЕРХНИЕ ФИКСИРОВАННЫЕ ИКОНКИ (ПК) ===== -->
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="{{ url_for('sale') }}" class="icon"><img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа"></a>
         <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
     </div>
 
+    <!-- ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== -->
     <div id="dropdown-menu" class="dropdown-menu">
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
@@ -323,6 +323,7 @@
         <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
         <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
         <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+        <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
     <!-- Основной блок -->
@@ -414,7 +415,7 @@
         <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
     </div>
 
-    <!-- Нижняя панель (мобильные) -->
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНЫЕ) ===== -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="{{ url_for('favorites') }}" class="nav-item">
             <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
@@ -423,6 +424,10 @@
         <a href="{{ url_for('cart') }}" class="nav-item">
             <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
             <span>Корзина</span>
+        </a>
+        <a href="{{ url_for('sale') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа">
+            <span>Распродажа</span>
         </a>
         <a href="#" class="nav-item" id="bottom-menu-btn">
             <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">
@@ -454,12 +459,10 @@
     </div>
 
     <script>
-        // Функция смены главного изображения
         function changeMainImage(src) {
             document.getElementById('main-image').src = src;
         }
 
-        // ---------- Логика для вариантов (цвет + размер) ----------
         const colorSelect = document.getElementById('color-select');
         const sizeSelect = document.getElementById('size-select');
         const variants = {{ product.variants|tojson|safe }};
@@ -489,7 +492,6 @@
             updateSizes();
         }
 
-        // ---------- Кнопка "В корзину" ----------
         document.querySelector('.add-to-cart').addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -535,7 +537,6 @@
             alert('Товар добавлен в корзину');
         });
 
-        // ---------- Кнопка избранного ----------
         const favBtn = document.querySelector('.favorite-btn');
         if (favBtn) {
             const id = parseInt(favBtn.dataset.id);
@@ -564,7 +565,6 @@
             });
         }
 
-        // ---------- Lightbox ----------
         function openLightbox(src) {
             const lightbox = document.getElementById('lightbox');
             const lightboxImg = document.getElementById('lightbox-img');
@@ -585,11 +585,9 @@
             }
         });
 
-        // ---------- Выпадающее меню (двойной обработчик) ----------
         document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.getElementById('dropdown-menu');
 
-            // Верхняя иконка меню
             const menuIcon = document.querySelector('.fixed-icons .icon:last-child');
             if (menuIcon && dropdown) {
                 menuIcon.addEventListener('click', function(e) {
@@ -599,7 +597,6 @@
                 });
             }
 
-            // Нижняя иконка меню (мобильная)
             const bottomMenuBtn = document.getElementById('bottom-menu-btn');
             if (bottomMenuBtn && dropdown) {
                 bottomMenuBtn.addEventListener('click', function(e) {
@@ -609,7 +606,6 @@
                 });
             }
 
-            // Закрытие при клике вне меню
             document.addEventListener('click', function(e) {
                 if (dropdown.classList.contains('open') &&
                     !dropdown.contains(e.target) &&

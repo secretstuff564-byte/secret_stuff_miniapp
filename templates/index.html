@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
     <style>
-        /* Стили для модального окна */
+        /* Стили для модального окна (без изменений) */
         .cart-modal {
             display: none;
             position: fixed;
@@ -162,6 +162,7 @@
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="{{ url_for('sale') }}" class="icon"><img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа"></a>
         <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
     </div>
 
@@ -176,10 +177,11 @@
         <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
         <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
         <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+        <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
     <!-- Разделитель -->
-    <div class="separator" style="margin-top: 160px;">
+    <div class="separator">
         <span>Новинки</span>
     </div>
 
@@ -231,6 +233,11 @@
         <a href="{{ url_for('cart') }}" class="nav-item">
             <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
             <span>Корзина</span>
+        </a>
+        <!-- ===== НОВАЯ ИКОНКА "РАСПРОДАЖА" ===== -->
+        <a href="{{ url_for('sale') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа">
+            <span>Распродажа</span>
         </a>
         <a href="#" class="nav-item" id="bottom-menu-btn">
             <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">

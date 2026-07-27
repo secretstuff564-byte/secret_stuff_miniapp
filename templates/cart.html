@@ -8,8 +8,6 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
     <style>
-        /* ... все стили остаются без изменений (как в вашем файле) ... */
-        /* Я не буду дублировать их для краткости, но они должны остаться теми же */
         .cart-container { max-width: 1200px; margin: 160px auto 40px; padding: 0 20px; }
         .cart-empty { text-align: center; padding: 80px 20px; font-family: 'Quicksand', sans-serif; font-size: 24px; color: #666; position: relative; }
         .continue-shopping { display: inline-block; margin-top: 20px; padding: 12px 30px; background: #cddae9; color: white; text-decoration: none; border-radius: 40px; font-family: 'Quicksand', sans-serif; font-weight: 600; transition: background 0.2s, transform 0.1s; cursor: pointer; }
@@ -159,12 +157,15 @@
         </div>
     </div>
 
+    <!-- ===== ВЕРХНИЕ ФИКСИРОВАННЫЕ ИКОНКИ (ПК) ===== -->
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="{{ url_for('sale') }}" class="icon"><img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа"></a>
         <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
     </div>
 
+    <!-- ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== -->
     <div id="dropdown-menu" class="dropdown-menu">
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
@@ -175,6 +176,7 @@
         <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
         <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
         <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+        <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
     <div class="separator">
@@ -189,6 +191,7 @@
         <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
     </div>
 
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНЫЕ) ===== -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="{{ url_for('favorites') }}" class="nav-item">
             <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
@@ -197,6 +200,10 @@
         <a href="{{ url_for('cart') }}" class="nav-item">
             <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
             <span>Корзина</span>
+        </a>
+        <a href="{{ url_for('sale') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа">
+            <span>Распродажа</span>
         </a>
         <a href="#" class="nav-item" id="bottom-menu-btn">
             <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">
@@ -341,7 +348,6 @@
                     checkoutBtn.disabled = true;
                     checkoutBtn.textContent = 'Оформление...';
 
-                    // Формируем текст заказа
                     let orderText = 'Новый заказ!\n\n';
                     let total = 0;
                     cart.forEach((item, idx) => {
@@ -355,7 +361,6 @@
                     });
                     orderText += `\nИтого: ${total} ₽`;
 
-                    // Копируем в буфер обмена
                     const textarea = document.createElement('textarea');
                     textarea.value = orderText;
                     document.body.appendChild(textarea);
@@ -363,15 +368,11 @@
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
 
-                    // Очищаем корзину
                     localStorage.removeItem('shopping_cart');
                     renderCart();
 
-                    // Открываем диалог с менеджером через HTTPS (работает всегда)
                     const link = `https://t.me/${MANAGER_USERNAME}`;
                     if (window.Telegram && window.Telegram.WebApp) {
-                        // Внутри Telegram Mini App можно использовать openTelegramLink, но он не для HTTPS
-                        // Поэтому просто открываем в новой вкладке
                         window.open(link, '_blank');
                     } else {
                         window.open(link, '_blank');

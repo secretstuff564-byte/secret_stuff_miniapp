@@ -12,26 +12,34 @@
         .product-link { display: block; text-decoration: none; color: inherit; }
 
         #category-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
             min-height: 60vh;
             padding: 20px;
             max-width: 1200px;
             margin: 40px auto;
-            gap: 30px;
         }
-        #category-container:not(:empty) {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-            min-height: auto;
-            align-items: start;
+        #category-container:empty {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
         }
+        body #category-container.has-products {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 30px !important;
+            padding: 0 20px !important;
+            min-height: auto !important;
+        }
+        @media (max-width: 768px) {
+            body #category-container.has-products {
+                grid-template-columns: repeat(2, 1fr) !important;
+                max-width: 600px !important;
+                gap: 15px !important;
+                padding: 0 10px !important;
+            }
+        }
+
         .empty-category {
             text-align: center;
             font-family: 'Quicksand', sans-serif;
@@ -39,22 +47,6 @@
             color: #666;
             width: 100%;
             padding: 0;
-        }
-
-        /* ===== ИСПРАВЛЕННЫЙ МЕДИАЗАПРОС ===== */
-        @media (max-width: 700px) {
-            #category-container:not(:empty) {
-                grid-template-columns: repeat(2, 1fr);
-                max-width: 600px;
-                gap: 15px;
-                padding: 0 10px;
-            }
-            @media (max-width: 480px) {
-                #category-container:not(:empty) {
-                    grid-template-columns: 1fr;
-                    max-width: 350px;
-                }
-            }
         }
 
         /* Стили для модального окна */
@@ -143,7 +135,6 @@
             #modal-product-name { font-size: 18px; }
         }
 
-        /* ===== Стили для нижней панели (мобильные) ===== */
         .bottom-nav {
             display: none;
             position: fixed;
@@ -191,7 +182,6 @@
 </head>
 <body>
 
-    <!-- Фиксированная шапка (скрывается при скролле) -->
     <div class="top-bar">
         <div class="left-placeholder"></div>
         <div class="logo">
@@ -201,14 +191,15 @@
         </div>
     </div>
 
-    <!-- Фиксированные иконки -->
+    <!-- ===== ВЕРХНИЕ ФИКСИРОВАННЫЕ ИКОНКИ (ПК) ===== -->
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="{{ url_for('sale') }}" class="icon"><img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа"></a>
         <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
     </div>
 
-    <!-- Выпадающее меню -->
+    <!-- ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== -->
     <div id="dropdown-menu" class="dropdown-menu">
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
@@ -219,24 +210,22 @@
         <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
         <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
         <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+        <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
-    <!-- Разделитель -->
     <div class="separator">
         <span>{{ category_ru }}</span>
     </div>
 
-    <!-- Контейнер для товаров -->
     <div id="category-container"></div>
 
-    <!-- Социальные иконки -->
     <div class="social-links">
         <a href="https://t.me/+EJOQrWRWt3ZkNGQy" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tg.png') }}" alt="Telegram"></a>
         <a href="https://www.tiktok.com/@tg.secret_stuff_ru" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tt.png') }}" alt="TikTok"></a>
         <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
     </div>
 
-    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (мобильные) ===== -->
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНЫЕ) ===== -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="{{ url_for('favorites') }}" class="nav-item">
             <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
@@ -246,13 +235,16 @@
             <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
             <span>Корзина</span>
         </a>
+        <a href="{{ url_for('sale') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа">
+            <span>Распродажа</span>
+        </a>
         <a href="#" class="nav-item" id="bottom-menu-btn">
             <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">
             <span>Меню</span>
         </a>
     </div>
 
-    <!-- Модальное окно -->
     <div id="cart-modal" class="cart-modal">
         <div class="cart-modal-content">
             <span class="cart-modal-close">&times;</span>
@@ -286,6 +278,7 @@
 
             if (!categoryProducts || categoryProducts.length === 0) {
                 container.innerHTML = `<div class="empty-category">В категории "${categoryName}" пока нет товаров<br>Скоро появятся</div>`;
+                container.classList.remove('has-products');
                 return;
             }
 
@@ -312,6 +305,7 @@
                 `;
             });
             container.innerHTML = html;
+            container.classList.add('has-products');
 
             initProductCards();
             initFavoriteButtons();
@@ -396,11 +390,9 @@
 
         renderCategory();
 
-        // ===== МОДАЛЬНОЕ ОКНО И ВЫПАДАЮЩЕЕ МЕНЮ =====
         document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.getElementById('dropdown-menu');
 
-            // Верхняя иконка меню
             const menuIcon = document.querySelector('.fixed-icons .icon:last-child');
             if (menuIcon && dropdown) {
                 menuIcon.addEventListener('click', function(e) {
@@ -410,7 +402,6 @@
                 });
             }
 
-            // Нижняя иконка меню (мобильная)
             const bottomMenuBtn = document.getElementById('bottom-menu-btn');
             if (bottomMenuBtn && dropdown) {
                 bottomMenuBtn.addEventListener('click', function(e) {
@@ -420,7 +411,6 @@
                 });
             }
 
-            // Закрытие при клике вне меню
             document.addEventListener('click', function(e) {
                 if (dropdown.classList.contains('open') &&
                     !dropdown.contains(e.target) &&
@@ -430,7 +420,7 @@
                 }
             });
 
-            // ---------- Модальное окно для корзины ----------
+            // Модальное окно для корзины
             const modal = document.getElementById('cart-modal');
             const closeBtn = document.querySelector('.cart-modal-close');
             const modalProductName = document.getElementById('modal-product-name');
@@ -547,7 +537,6 @@
                 closeModal();
             });
 
-            // Обработчик клика по кнопкам "В корзину" на карточках (делегирование)
             document.addEventListener('click', function(e) {
                 const buyBtn = e.target.closest('.buy-btn');
                 if (!buyBtn) return;

@@ -170,6 +170,11 @@ def reload_products():
     products = load_products()
     return 'Товары перезагружены из Excel'
 
+@app.route('/sale')
+def sale():
+    sale_products = [p for p in products if p.get('category', '').lower() == 'sale']
+    return render_template('sale.html', products=sale_products)
+
 
 # ===== МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА (ТОЛЬКО ОБНОВЛЕНИЕ ОСТАТКОВ) =====
 @app.route('/checkout', methods=['POST'])
