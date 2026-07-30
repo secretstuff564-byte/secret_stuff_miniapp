@@ -8,6 +8,47 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
     <style>
+        .separator { margin-top: 160px; }
+        .product-link { display: block; text-decoration: none; color: inherit; }
+
+        #main-container {
+            min-height: 60vh;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+        #main-container:empty {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+        }
+        body #main-container.has-products {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 30px !important;
+            padding: 0 20px !important;
+            min-height: auto !important;
+        }
+        @media (max-width: 768px) {
+            body #main-container.has-products {
+                grid-template-columns: repeat(2, 1fr) !important;
+                max-width: 600px !important;
+                gap: 15px !important;
+                padding: 0 10px !important;
+            }
+        }
+
+        .empty-category {
+            text-align: center;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 24px;
+            color: #666;
+            width: 100%;
+            padding: 0;
+        }
+
         /* Стили для модального окна */
         .cart-modal {
             display: none;
@@ -90,15 +131,10 @@
             transform: scale(1.02);
         }
         @media (max-width: 480px) {
-            .cart-modal-content {
-                padding: 20px;
-            }
-            #modal-product-name {
-                font-size: 18px;
-            }
+            .cart-modal-content { padding: 20px; }
+            #modal-product-name { font-size: 18px; }
         }
 
-        /* Стили для нижней панели (мобильные) */
         .bottom-nav {
             display: none;
             position: fixed;
@@ -146,7 +182,6 @@
 </head>
 <body>
 
-    <!-- Фиксированная шапка -->
     <div class="top-bar">
         <div class="left-placeholder"></div>
         <div class="logo">
@@ -156,7 +191,7 @@
         </div>
     </div>
 
-    <!-- Верхние фиксированные иконки (ПК) -->
+    <!-- ===== ВЕРХНИЕ ФИКСИРОВАННЫЕ ИКОНКИ (ПК) ===== -->
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
@@ -164,7 +199,7 @@
         <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
     </div>
 
-    <!-- Выпадающее меню -->
+    <!-- ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== -->
     <div id="dropdown-menu" class="dropdown-menu">
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
@@ -178,46 +213,19 @@
         <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
-    <!-- Разделитель -->
     <div class="separator">
         <span>Новинки</span>
     </div>
 
-    <!-- Карточки товаров -->
-    <div class="products-row">
-        {% for product in products %}
-        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="product-link">
-            <div class="product-card" data-id="{{ product.id }}" data-images="{{ product.images|join(',') }}">
-                <div class="card-image">
-                    <img src="{{ url_for('static', filename=product.images[0]) }}" alt="{{ product.name }}">
-                </div>
-                <h3>{{ product.name }}</h3>
-                <p class="price">{{ product.price|int|to_locale }} ₽</p>
-                <div class="card-buttons">
-                    <button class="buy-btn">В корзину</button>
-                    <button class="favorite-btn">
-                        <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="В избранное">
-                    </button>
-                </div>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
+    <div id="main-container"></div>
 
-    <!-- Социальные сети -->
     <div class="social-links">
-        <a href="https://t.me/+EJOQrWRWt3ZkNGQy" target="_blank" class="social-icon">
-            <img src="{{ url_for('static', filename='tg.png') }}" alt="Telegram">
-        </a>
-        <a href="https://www.tiktok.com/@tg.secret_stuff_ru" target="_blank" class="social-icon">
-            <img src="{{ url_for('static', filename='tt.png') }}" alt="TikTok">
-        </a>
-        <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon">
-            <img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram">
-        </a>
+        <a href="https://t.me/+EJOQrWRWt3ZkNGQy" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tg.png') }}" alt="Telegram"></a>
+        <a href="https://www.tiktok.com/@tg.secret_stuff_ru" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='tt.png') }}" alt="TikTok"></a>
+        <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
     </div>
 
-    <!-- Нижняя панель (мобильные) -->
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНЫЕ) ===== -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="{{ url_for('favorites') }}" class="nav-item">
             <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
@@ -237,7 +245,6 @@
         </a>
     </div>
 
-    <!-- Модальное окно -->
     <div id="cart-modal" class="cart-modal">
         <div class="cart-modal-content">
             <span class="cart-modal-close">&times;</span>
@@ -260,12 +267,128 @@
         </div>
     </div>
 
-    <!-- Скрипты -->
-    <script src="{{ url_for('static', filename='products.js') }}"></script>
-    <script src="{{ url_for('static', filename='header.js') }}"></script>
     <script>
         const allProducts = {{ products|tojson|safe }};
         const staticBase = '{{ url_for("static", filename="") }}';
+        const categoryName = 'Новинки';
+
+        function renderMain() {
+            const container = document.getElementById('main-container');
+            if (!container) return;
+
+            if (!allProducts || allProducts.length === 0) {
+                container.innerHTML = `<div class="empty-category">В категории "${categoryName}" пока нет товаров<br>Скоро появятся</div>`;
+                container.classList.remove('has-products');
+                return;
+            }
+
+            let html = '';
+            allProducts.forEach(product => {
+                const imagesList = product.images.join(',');
+                const firstImage = product.images[0];
+                html += `
+                    <div class="product-card" data-id="${product.id}" data-images="${imagesList}">
+                        <a href="/product/${product.id}" class="product-link">
+                            <div class="card-image">
+                                <img src="${staticBase}${firstImage}" alt="${product.name}">
+                            </div>
+                            <h3>${product.name}</h3>
+                            <p class="price">${product.price.toLocaleString()} ₽</p>
+                        </a>
+                        <div class="card-buttons">
+                            <button class="buy-btn">В корзину</button>
+                            <button class="favorite-btn">
+                                <img src="${staticBase}izbrannoe.png" alt="В избранное">
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            container.classList.add('has-products');
+
+            initProductCards();
+            initFavoriteButtons();
+        }
+
+        function initProductCards() {
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach(card => {
+                const imagesAttr = card.getAttribute('data-images');
+                if (!imagesAttr) return;
+                let imagesList = imagesAttr.split(',').map(s => s.trim());
+                if (imagesList.length < 2) return;
+                const imgElement = card.querySelector('.card-image img');
+                if (imgElement && imagesList[0]) {
+                    imgElement.src = staticBase + imagesList[0];
+                }
+                let currentIndex = 0;
+                let hoverTimer = null;
+                const changeImage = (index) => {
+                    if (index >= imagesList.length) index = 0;
+                    if (index < 0) index = imagesList.length - 1;
+                    const newSrc = staticBase + imagesList[index];
+                    if (imgElement.src !== newSrc && newSrc) {
+                        imgElement.style.opacity = '0';
+                        setTimeout(() => {
+                            imgElement.src = newSrc;
+                            imgElement.style.opacity = '1';
+                        }, 150);
+                    }
+                    return index;
+                };
+                card.addEventListener('mouseenter', () => {
+                    if (hoverTimer) clearInterval(hoverTimer);
+                    hoverTimer = setInterval(() => {
+                        currentIndex = (currentIndex + 1) % imagesList.length;
+                        changeImage(currentIndex);
+                    }, 600);
+                });
+                card.addEventListener('mouseleave', () => {
+                    if (hoverTimer) {
+                        clearInterval(hoverTimer);
+                        hoverTimer = null;
+                    }
+                    currentIndex = 0;
+                    changeImage(0);
+                });
+            });
+        }
+
+        function initFavoriteButtons() {
+            let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const btns = document.querySelectorAll('.favorite-btn');
+            btns.forEach(btn => {
+                const card = btn.closest('.product-card');
+                const id = parseInt(card.getAttribute('data-id'));
+                const isFav = favorites.includes(id);
+                const img = btn.querySelector('img');
+                if (isFav) {
+                    btn.classList.add('active');
+                    img.src = staticBase + 'filled.png';
+                } else {
+                    img.src = staticBase + 'izbrannoe.png';
+                }
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+                    const idx = favs.indexOf(id);
+                    if (idx === -1) {
+                        favs.push(id);
+                        btn.classList.add('active');
+                        img.src = staticBase + 'filled.png';
+                    } else {
+                        favs.splice(idx, 1);
+                        btn.classList.remove('active');
+                        img.src = staticBase + 'izbrannoe.png';
+                    }
+                    localStorage.setItem('favorites', JSON.stringify(favs));
+                });
+            });
+        }
+
+        renderMain();
 
         document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.getElementById('dropdown-menu');
@@ -297,7 +420,7 @@
                 }
             });
 
-            // Модальное окно
+            // Модальное окно для корзины
             const modal = document.getElementById('cart-modal');
             const closeBtn = document.querySelector('.cart-modal-close');
             const modalProductName = document.getElementById('modal-product-name');
@@ -431,5 +554,7 @@
             });
         });
     </script>
+
+    <script src="{{ url_for('static', filename='header.js') }}"></script>
 </body>
 </html>
