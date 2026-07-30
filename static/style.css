@@ -201,7 +201,7 @@ p {
     justify-content: center;
     margin: 0 auto;
     max-width: 2600px;
-    padding: 0 0 px;
+    padding: 0;
 }
 
 .hero-image img {
@@ -295,6 +295,7 @@ p {
     .products-row {
         grid-template-columns: repeat(2, 1fr) !important;
         max-width: 100% !important;
+        width: 100% !important;
         gap: 15px !important;
         padding: 0 10px !important;
         margin: 40px 0 !important;
@@ -634,7 +635,7 @@ p {
 @media (max-width: 768px) {
     .separator {
         padding: 10px 0;
-        margin-top: 160px;
+        margin-top: 140px;
     }
     .separator span {
         font-size: 18px;
