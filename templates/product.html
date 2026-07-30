@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
     <style>
+        /* ... все существующие стили ... */
         .product-detail {
             max-width: 1200px;
             margin: 160px auto 40px;
@@ -15,46 +16,7 @@
             display: flex;
             gap: 40px;
             flex-wrap: wrap;
-            position: relative;
         }
-        .back-button {
-            position: absolute;
-            top: 0;
-            left: 20px;
-            background: #cddae9;
-            color: #ffffff;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            font-size: 22px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            z-index: 10;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .back-button:hover {
-            background: #1e3a3a;
-            transform: scale(1.05);
-        }
-        @media (max-width: 768px) {
-            .product-detail {
-                margin-top: 140px;
-                flex-direction: column;
-            }
-            .back-button {
-                top: 10px;
-                left: 10px;
-                width: 36px;
-                height: 36px;
-                font-size: 18px;
-            }
-        }
-
         .product-gallery {
             flex: 1 1 40%;
             min-width: 300px;
@@ -172,6 +134,12 @@
         }
         .product-info .favorite-btn:hover {
             transform: scale(1.1);
+        }
+        @media (max-width: 768px) {
+            .product-detail {
+                margin-top: 140px;
+                flex-direction: column;
+            }
         }
 
         .lookbook-section {
@@ -323,6 +291,52 @@
                 padding-bottom: 70px;
             }
         }
+
+        /* ===== КНОПКА "НАЗАД" ===== */
+        .back-button {
+            position: fixed;
+            top: 85px;
+            left: 15px;
+            z-index: 999;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(4px);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 24px;
+            font-weight: 300;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: background 0.2s, transform 0.2s, opacity 0.2s;
+            opacity: 1;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        .back-button:hover {
+            background: rgba(255,255,255,0.95);
+            transform: scale(1.05);
+            opacity: 1;
+        }
+        .back-button:active {
+            transform: scale(0.95);
+        }
+        @media (min-width: 769px) {
+            .back-button {
+                display: none; /* скрываем на десктопе */
+            }
+        }
+        @media (max-width: 768px) {
+            .back-button {
+                top: 75px;
+                left: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -359,11 +373,15 @@
         <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
+    <!-- ===== КНОПКА "НАЗАД" ===== -->
+    <a href="javascript:history.back()" class="back-button" aria-label="Назад">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </a>
+
     <!-- Основной блок -->
     <div class="product-detail">
-        <!-- КНОПКА НАЗАД -->
-        <button class="back-button" onclick="history.back()">←</button>
-
         <div class="product-gallery">
             <img class="main-img" id="main-image" src="{{ url_for('static', filename=product.images[0]) }}" alt="{{ product.name }}">
             <div class="thumbnails">
