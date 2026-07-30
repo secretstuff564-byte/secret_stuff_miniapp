@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='icon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@800&display=swap" rel="stylesheet">
     <style>
-        /* Стили для модального окна (без изменений) */
+        /* Стили для модального окна */
         .cart-modal {
             display: none;
             position: fixed;
@@ -47,9 +47,7 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .cart-modal-close:hover {
-            color: #000;
-        }
+        .cart-modal-close:hover { color: #000; }
         #modal-product-name {
             font-family: 'Quicksand', sans-serif;
             font-size: 22px;
@@ -100,7 +98,7 @@
             }
         }
 
-        /* ===== Стили для нижней панели (мобильные) ===== */
+        /* Стили для нижней панели (мобильные) */
         .bottom-nav {
             display: none;
             position: fixed;
@@ -145,7 +143,24 @@
             }
         }
 
-        /* ===== ДОБАВЛЯЕМ ОТСТУП ДЛЯ РАЗДЕЛИТЕЛЯ, КАК В КАТЕГОРИЯХ ===== */
+        /* === ЕДИНЫЕ СТИЛИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ (КАК В КАТЕГОРИЯХ) === */
+        body .products-row {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 30px !important;
+            max-width: 1200px !important;
+            margin: 40px auto !important;
+            padding: 0 20px !important;
+            min-height: auto !important;
+        }
+        @media (max-width: 768px) {
+            body .products-row {
+                grid-template-columns: repeat(2, 1fr) !important;
+                max-width: 600px !important;
+                gap: 15px !important;
+                padding: 0 10px !important;
+            }
+        }
         .separator {
             margin-top: 160px;
         }
@@ -163,7 +178,7 @@
         </div>
     </div>
 
-    <!-- Верхние фиксированные иконки -->
+    <!-- Верхние фиксированные иконки (ПК) -->
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
@@ -189,8 +204,6 @@
     <div class="separator">
         <span>Новинки</span>
     </div>
-
-    <!-- УДАЛЁН ПУСТОЙ БЛОК .content -->
 
     <!-- Карточки товаров -->
     <div class="products-row">
