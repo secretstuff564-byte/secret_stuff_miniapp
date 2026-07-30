@@ -15,7 +15,46 @@
             display: flex;
             gap: 40px;
             flex-wrap: wrap;
+            position: relative;
         }
+        .back-button {
+            position: absolute;
+            top: 0;
+            left: 20px;
+            background: #cddae9;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 22px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .back-button:hover {
+            background: #1e3a3a;
+            transform: scale(1.05);
+        }
+        @media (max-width: 768px) {
+            .product-detail {
+                margin-top: 140px;
+                flex-direction: column;
+            }
+            .back-button {
+                top: 10px;
+                left: 10px;
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+        }
+
         .product-gallery {
             flex: 1 1 40%;
             min-width: 300px;
@@ -133,12 +172,6 @@
         }
         .product-info .favorite-btn:hover {
             transform: scale(1.1);
-        }
-        @media (max-width: 768px) {
-            .product-detail {
-                margin-top: 140px;
-                flex-direction: column;
-            }
         }
 
         .lookbook-section {
@@ -328,6 +361,9 @@
 
     <!-- Основной блок -->
     <div class="product-detail">
+        <!-- КНОПКА НАЗАД -->
+        <button class="back-button" onclick="history.back()">←</button>
+
         <div class="product-gallery">
             <img class="main-img" id="main-image" src="{{ url_for('static', filename=product.images[0]) }}" alt="{{ product.name }}">
             <div class="thumbnails">
