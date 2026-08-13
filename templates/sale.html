@@ -59,7 +59,7 @@
         .modal-color, .modal-size { margin-bottom: 15px; }
         .modal-color label, .modal-size label { font-weight: 600; margin-right: 10px; font-family: 'Quicksand', sans-serif; }
         .modal-color select, .modal-size select { padding: 8px 16px; border-radius: 30px; border: 1px solid #ddd; font-size: 16px; background: white; width: 100%; max-width: 200px; }
-        #modal-add-to-cart { background: #cddae9; color: white; border: none; padding: 12px 30px; border-radius: 40px; font-size: 18px; font-family: 'Quicksand', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; margin-top: 10px; }
+        #modal-add-to-cart { background: #1E90FF; color: white; border: none; padding: 12px 30px; border-radius: 40px; font-size: 18px; font-family: 'Quicksand', sans-serif; font-weight: 600; cursor: pointer; transition: background 0.2s, transform 0.1s; width: 100%; margin-top: 10px; }
         #modal-add-to-cart:hover { background: #1e3a3a; transform: scale(1.02); }
         @media (max-width: 480px) { .cart-modal-content { padding: 20px; } #modal-product-name { font-size: 18px; } }
 
@@ -94,6 +94,7 @@
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
         <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='pants') }}">Штаны</a>
         <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
         <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
         <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
@@ -372,7 +373,7 @@
                         if (stock > 0) {
                             const opt = document.createElement('option');
                             opt.value = size;
-                            opt.textContent = size + ' (' + stock + ' шт.)';
+                            opt.textContent = size;
                             sizeSelect.appendChild(opt);
                         }
                     });

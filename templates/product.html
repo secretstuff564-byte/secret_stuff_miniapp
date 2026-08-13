@@ -102,7 +102,7 @@
             background: white;
         }
         .product-info .add-to-cart {
-            background: #cddae9;
+            background: #1E90FF;
             color: white;
             border: none;
             padding: 14px 40px;
@@ -364,6 +364,7 @@
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
         <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='pants') }}">Штаны</a>
         <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
         <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
         <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
@@ -372,7 +373,6 @@
         <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
         <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
-
     <!-- ===== КНОПКА "НАЗАД" ===== -->
     <a href="javascript:history.back()" class="back-button" aria-label="Назад">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -536,7 +536,7 @@
                         const option = document.createElement('option');
                         option.value = size;
                         const displaySize = (size === 'one_size') ? 'Один размер' : size;
-                        option.textContent = displaySize + ' (' + stock + ' шт.)';
+                        option.textContent = displaySize;
                         sizeSelect.appendChild(option);
                     }
                 }

@@ -113,7 +113,7 @@
             max-width: 200px;
         }
         #modal-add-to-cart {
-            background: #cddae9;
+            background: #1E90FF;
             color: white;
             border: none;
             padding: 12px 30px;
@@ -204,6 +204,7 @@
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
         <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='pants') }}">Штаны</a>
         <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
         <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
         <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
@@ -484,7 +485,7 @@
                         if (stock > 0) {
                             const opt = document.createElement('option');
                             opt.value = size;
-                            opt.textContent = size + ' (' + stock + ' шт.)';
+                            opt.textContent = size;
                             sizeSelect.appendChild(opt);
                         }
                     });
