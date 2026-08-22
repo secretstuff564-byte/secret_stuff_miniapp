@@ -267,7 +267,7 @@ p {
 }
 
 .buy-btn {
-    background: #cddae9;
+    background: #1E90FF;
     color: #ffffff;
     border: none;
     padding: 10px 24px;
@@ -579,7 +579,7 @@ p {
 }
 
 #modal-add-to-cart {
-    background: #cddae9;
+    background: #1E90FF;
     color: white;
     border: none;
     padding: 12px 30px;
@@ -610,7 +610,7 @@ p {
 /* ===== ЕДИНЫЙ СТИЛЬ ДЛЯ РАЗДЕЛИТЕЛЯ ===== */
 .separator {
     width: 100%;
-    background: #cddae9;
+    background: #2f3a45;
     padding: 14px 0;
     display: flex;
     align-items: center;
