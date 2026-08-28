@@ -94,10 +94,12 @@ def load_products():
 
 products = load_products()
 
+# ===== СЛОВАРЬ НАЗВАНИЙ КАТЕГОРИЙ =====
 CATEGORY_NAMES = {
     'footwear': 'Обувь',
     't-shirts': 'Футболки',
     'jeans': 'Джинсы',
+    'pants': 'Штаны',          # <-- ДОБАВЛЕНО
     'hoodies': 'Худи',
     'shorts': 'Шорты',
     'puffer': 'Пуховики',
@@ -169,6 +171,12 @@ def reload_products():
     global products
     products = load_products()
     return 'Товары перезагружены из Excel'
+
+
+@app.route('/sale')
+def sale():
+    sale_products = [p for p in products if p.get('category', '').lower() == 'sale']
+    return render_template('sale.html', products=sale_products)
 
 
 # ===== МАРШРУТ ДЛЯ ОФОРМЛЕНИЯ ЗАКАЗА (ТОЛЬКО ОБНОВЛЕНИЕ ОСТАТКОВ) =====

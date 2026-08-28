@@ -196,59 +196,12 @@ p {
     border-radius: 5px;
 }
 
-.separator {
-    width: 100%;
-    background: #cddae9;
-    padding: 14px 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.separator span {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 800;
-    font-size: 25px;
-    letter-spacing: 0.5px;
-    color: #ffffff;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-    text-transform: uppercase;
-    background: transparent;
-    padding: 0;
-    border-radius: 0;
-}
-
-@media (max-width: 768px) {
-    .carousel-card img {
-        max-width: 280px;
-    }
-    .card-label {
-        font-size: 18px;
-    }
-    .dot {
-        width: 8px;
-        height: 8px;
-    }
-    .dot.active {
-        width: 20px;
-    }
-    .separator {
-        height: 48px;
-        padding: 10px 0;
-    }
-    .separator span {
-        font-size: 18px;
-        padding: 3px 16px;
-    }
-}
-
 .hero-image {
     display: flex;
     justify-content: center;
     margin: 0 auto;
     max-width: 2600px;
-    padding: 0 0 px;
+    padding: 0;
 }
 
 .hero-image img {
@@ -314,7 +267,7 @@ p {
 }
 
 .buy-btn {
-    background: #cddae9;
+    background: #1E90FF;
     color: #ffffff;
     border: none;
     padding: 10px 24px;
@@ -331,7 +284,6 @@ p {
     transform: scale(1.02);
 }
 
-/* ===== Планшеты ===== */
 @media (max-width: 900px) {
     .products-row {
         gap: 20px;
@@ -339,13 +291,14 @@ p {
     }
 }
 
-/* ===== Мобильные: 2 товара в ряд (всегда) ===== */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
     .products-row {
         grid-template-columns: repeat(2, 1fr) !important;
-        max-width: 600px;
-        gap: 15px;
-        padding: 0 10px;
+        max-width: 100% !important;
+        width: 100% !important;
+        gap: 15px !important;
+        padding: 0 10px !important;
+        margin: 40px 0 !important;
     }
     .product-card {
         max-width: 100%;
@@ -626,7 +579,7 @@ p {
 }
 
 #modal-add-to-cart {
-    background: #cddae9;
+    background: #1E90FF;
     color: white;
     border: none;
     padding: 12px 30px;
@@ -651,5 +604,41 @@ p {
     }
     #modal-product-name {
         font-size: 18px;
+    }
+}
+
+/* ===== ЕДИНЫЙ СТИЛЬ ДЛЯ РАЗДЕЛИТЕЛЯ ===== */
+.separator {
+    width: 100%;
+    background: #2f3a45;
+    padding: 14px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 160px;
+}
+
+.separator span {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 25px;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    text-transform: uppercase;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+}
+
+@media (max-width: 768px) {
+    .separator {
+        padding: 10px 0;
+        margin-top: 140px;
+    }
+    .separator span {
+        font-size: 18px;
+        padding: 3px 16px;
     }
 }

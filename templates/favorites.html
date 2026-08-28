@@ -25,7 +25,7 @@
             display: inline-block;
             margin-top: 20px;
             padding: 12px 30px;
-            background: #cddae9;
+            background: #1E90FF;
             color: white;
             text-decoration: none;
             border-radius: 40px;
@@ -125,7 +125,7 @@
             max-width: 200px;
         }
         #modal-add-to-cart {
-            background: #cddae9;
+            background: #1E90FF;
             color: white;
             border: none;
             padding: 12px 30px;
@@ -209,24 +209,27 @@
         </div>
     </div>
 
-    <!-- Фиксированные иконки (всегда видны) -->
+    <!-- ===== ВЕРХНИЕ ФИКСИРОВАННЫЕ ИКОНКИ (ПК) ===== -->
     <div class="fixed-icons">
         <a href="{{ url_for('favorites') }}" class="icon"><img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное"></a>
         <a href="{{ url_for('cart') }}" class="icon"><img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина"></a>
+        <a href="{{ url_for('sale') }}" class="icon"><img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа"></a>
         <a href="#" class="icon"><img src="{{ url_for('static', filename='menu.png') }}" alt="Меню"></a>
     </div>
 
-    <!-- Выпадающее меню -->
+    <!-- ===== ВЫПАДАЮЩЕЕ МЕНЮ ===== -->
     <div id="dropdown-menu" class="dropdown-menu">
         <a href="{{ url_for('category', cat='footwear') }}">Обувь</a>
         <a href="{{ url_for('category', cat='t-shirts') }}">Футболки</a>
         <a href="{{ url_for('category', cat='jeans') }}">Джинсы</a>
+        <a href="{{ url_for('category', cat='pants') }}">Штаны</a>
         <a href="{{ url_for('category', cat='hoodies') }}">Худи</a>
         <a href="{{ url_for('category', cat='shorts') }}">Шорты</a>
         <a href="{{ url_for('category', cat='puffer') }}">Пуховики</a>
         <a href="{{ url_for('category', cat='windbreakers') }}">Ветровки</a>
         <a href="{{ url_for('category', cat='bags') }}">Сумки</a>
         <a href="{{ url_for('category', cat='accessories') }}">Аксессуары</a>
+        <a href="{{ url_for('sale') }}" style="color: #e63946; font-weight: 700;">🔥 Распродажа</a>
     </div>
 
     <!-- Блок "Избранное" -->
@@ -244,7 +247,7 @@
         <a href="https://www.instagram.com/secret_stuff_ru/" target="_blank" class="social-icon"><img src="{{ url_for('static', filename='inst.png') }}" alt="Instagram"></a>
     </div>
 
-    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (мобильные) ===== -->
+    <!-- ===== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНЫЕ) ===== -->
     <div class="bottom-nav" id="bottom-nav">
         <a href="{{ url_for('favorites') }}" class="nav-item">
             <img src="{{ url_for('static', filename='izbrannoe.png') }}" alt="Избранное">
@@ -253,6 +256,10 @@
         <a href="{{ url_for('cart') }}" class="nav-item">
             <img src="{{ url_for('static', filename='korzina.png') }}" alt="Корзина">
             <span>Корзина</span>
+        </a>
+        <a href="{{ url_for('sale') }}" class="nav-item">
+            <img src="{{ url_for('static', filename='sale-icon.png') }}" alt="Распродажа">
+            <span>Распродажа</span>
         </a>
         <a href="#" class="nav-item" id="bottom-menu-btn">
             <img src="{{ url_for('static', filename='menu.png') }}" alt="Меню">
@@ -285,9 +292,7 @@
 
     <!-- Данные товаров -->
     <script>
-        // Безопасная передача данных из Flask
         const allProducts = {{ products|tojson|safe }};
-        // Базовый путь к статике
         const staticBase = '{{ url_for("static", filename="") }}';
     </script>
 
@@ -407,7 +412,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             const dropdown = document.getElementById('dropdown-menu');
 
-            // Верхняя иконка меню
             const menuIcon = document.querySelector('.fixed-icons .icon:last-child');
             if (menuIcon && dropdown) {
                 menuIcon.addEventListener('click', function(e) {
@@ -417,7 +421,6 @@
                 });
             }
 
-            // Нижняя иконка меню (мобильная)
             const bottomMenuBtn = document.getElementById('bottom-menu-btn');
             if (bottomMenuBtn && dropdown) {
                 bottomMenuBtn.addEventListener('click', function(e) {
@@ -427,7 +430,6 @@
                 });
             }
 
-            // Закрытие при клике вне меню
             document.addEventListener('click', function(e) {
                 if (dropdown.classList.contains('open') &&
                     !dropdown.contains(e.target) &&
@@ -501,7 +503,7 @@
                         if (stock > 0) {
                             const opt = document.createElement('option');
                             opt.value = size;
-                            opt.textContent = size + ' (' + stock + ' шт.)';
+                            opt.textContent = size;
                             sizeSelect.appendChild(opt);
                         }
                     });
